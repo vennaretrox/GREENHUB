@@ -1,4 +1,4 @@
--- GREENHUB V3: Minimal Square Logo + Speed 250
+-- GREENHUB V5: Rectangular GH Logo + LED Glow + Speed 600
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -18,12 +18,12 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "GreenHub"
 gui.Parent = getGui()
 
--- OPEN BUTTON (Square Logo)
+-- OPEN BUTTON (Rectangular Logo)
 local openBtn = Instance.new("TextButton", gui)
-openBtn.Size = UDim2.fromOffset(80,80) -- küçük kare
+openBtn.Size = UDim2.fromOffset(120,50) -- dikdörtgen
 openBtn.Position = UDim2.new(0,20,0,20)
 openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-openBtn.Text = "GREENHUB"
+openBtn.Text = "GH" -- kısa yazı
 openBtn.TextColor3 = Color3.fromRGB(0,255,0)
 openBtn.Font = Enum.Font.GothamSemibold
 openBtn.TextScaled = true
@@ -31,7 +31,7 @@ openBtn.AutoButtonColor = false
 openBtn.BorderSizePixel = 0
 openBtn.TextStrokeTransparency = 0.7
 
--- LED halo (kare etrafı)
+-- LED halo
 local halo = Instance.new("UIStroke", openBtn)
 halo.Color = Color3.fromRGB(0,255,0)
 halo.Thickness = 1.5
@@ -45,6 +45,16 @@ RunService.RenderStepped:Connect(function(dt)
     elseif t < 0.05 then t=0.05 pulseDir=1
     end
     halo.Transparency = t
+end)
+
+-- Hover: yazı "GREENHUB"
+openBtn.MouseEnter:Connect(function()
+    TweenService:Create(openBtn, TweenInfo.new(0.15), {TextColor3=Color3.fromRGB(0,255,180)}):Play()
+    openBtn.Text = "GREENHUB"
+end)
+openBtn.MouseLeave:Connect(function()
+    TweenService:Create(openBtn, TweenInfo.new(0.15), {TextColor3=Color3.fromRGB(0,255,0)}):Play()
+    openBtn.Text = "GH"
 end)
 
 -- DRAG
@@ -72,14 +82,6 @@ UIS.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = false
     end
-end)
-
--- Hover effect
-openBtn.MouseEnter:Connect(function()
-    TweenService:Create(openBtn, TweenInfo.new(0.15), {TextColor3=Color3.fromRGB(0,255,180)}):Play()
-end)
-openBtn.MouseLeave:Connect(function()
-    TweenService:Create(openBtn, TweenInfo.new(0.15), {TextColor3=Color3.fromRGB(0,255,0)}):Play()
 end)
 
 -- MAIN HUB
@@ -143,7 +145,7 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SPEED LOOP
+-- SPEED LOOP 600
 task.spawn(function()
     while true do
         task.wait(0.05)
@@ -151,7 +153,7 @@ task.spawn(function()
         if char then
             local hum = char:FindFirstChildOfClass("Humanoid")
             if hum then
-                hum.WalkSpeed = speedOn and 250 or 16 -- coil speed
+                hum.WalkSpeed = speedOn and 600 or 16
             end
         end
     end
