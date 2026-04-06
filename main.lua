@@ -142,10 +142,10 @@ game:GetService("RunService").Heartbeat:Connect(function()
     if not hum or not root then return end
 
     -- sürekli küçük boost (farkedilmez)
-    hum.WalkSpeed = 20
+    hum.WalkSpeed = 27
 
     -- ileri doğru hafif itme
-    if hum.MoveDirection.Magnitude > 0 then
+    if hum.MoveDirection.Magnitude > 0.1 then
         root.CFrame = root.CFrame + (hum.MoveDirection * 1.5)
     end
 end)   
