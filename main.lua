@@ -142,7 +142,7 @@ local function applySpeed()
 
     if speedOn then
         -- normalden biraz hızlı (şüphe çekmez)
-        hum.WalkSpeed = 22
+        hum.WalkSpeed = 27
 
         if not speedForce then
             speedForce = Instance.new("BodyVelocity")
@@ -155,7 +155,7 @@ local function applySpeed()
 
         -- YUMUŞAK hızlanma (en önemli kısım)
         local targetSpeed = 100 -- 🔥 ideal güvenli hız
-        speedForce.Velocity = speedForce.Velocity:Lerp(moveDir * targetSpeed, 0.17)
+        speedForce.Velocity = speedForce.Velocity:Lerp(moveDir * targetSpeed, 1.1)
 
     else
         hum.WalkSpeed = 16
