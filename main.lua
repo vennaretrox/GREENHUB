@@ -1,4 +1,4 @@
--- GREENHUB V5: Rectangular GH Logo + LED Glow + Speed 600
+-- GREENHUB V6: GH Logo + LED + Speed 1000 + Speed Ring
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -20,10 +20,10 @@ gui.Parent = getGui()
 
 -- OPEN BUTTON (Rectangular Logo)
 local openBtn = Instance.new("TextButton", gui)
-openBtn.Size = UDim2.fromOffset(120,50) -- dikdörtgen
+openBtn.Size = UDim2.fromOffset(120,50) 
 openBtn.Position = UDim2.new(0,20,0,20)
 openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-openBtn.Text = "GH" -- kısa yazı
+openBtn.Text = "GH"
 openBtn.TextColor3 = Color3.fromRGB(0,255,0)
 openBtn.Font = Enum.Font.GothamSemibold
 openBtn.TextScaled = true
@@ -37,7 +37,20 @@ halo.Color = Color3.fromRGB(0,255,0)
 halo.Thickness = 1.5
 halo.Transparency = 0.2
 
--- LED pulse
+-- SPEED RING
+local ring = Instance.new("Frame", openBtn)
+ring.Size = UDim2.new(1.4,0,1.4,0)
+ring.Position = UDim2.new(-0.2,0,-0.2,0)
+ring.BackgroundTransparency = 1
+ring.BorderSizePixel = 0
+ring.ClipsDescendants = false
+
+local uiStroke = Instance.new("UIStroke", ring)
+uiStroke.Color = Color3.fromRGB(0,255,0)
+uiStroke.Thickness = 2
+uiStroke.Transparency = 0.3
+
+-- LED pulse + ring pulse
 local pulseDir = 1
 RunService.RenderStepped:Connect(function(dt)
     local t = halo.Transparency + dt*0.8*pulseDir
@@ -45,6 +58,9 @@ RunService.RenderStepped:Connect(function(dt)
     elseif t < 0.05 then t=0.05 pulseDir=1
     end
     halo.Transparency = t
+
+    uiStroke.Transparency = halo.Transparency
+    ring.Rotation = ring.Rotation + (player.Character and player.Character:FindFirstChildOfClass("Humanoid") and 1000 or 0)*dt*0.01
 end)
 
 -- Hover: yazı "GREENHUB"
@@ -145,7 +161,7 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SPEED LOOP 600
+-- SPEED LOOP 1000
 task.spawn(function()
     while true do
         task.wait(0.05)
@@ -153,7 +169,7 @@ task.spawn(function()
         if char then
             local hum = char:FindFirstChildOfClass("Humanoid")
             if hum then
-                hum.WalkSpeed = speedOn and 600 or 16
+                hum.WalkSpeed = speedOn and 1000 or 16
             end
         end
     end
