@@ -126,7 +126,11 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- REAL SPEED (COIL SYSTEM)
+-- FINAL LEGIT SPEED SYSTEM (ANTI-LAG + ANTI-KICK)
+
+local speedOn = false
+local speedForce = nil
+
 local function applySpeed()
     local char = player.Character
     if not char then return end
@@ -137,16 +141,21 @@ local function applySpeed()
     if not root or not hum then return end
 
     if speedOn then
-        hum.WalkSpeed = 50
+        -- normalden biraz hızlı (şüphe çekmez)
+        hum.WalkSpeed = 22
 
         if not speedForce then
             speedForce = Instance.new("BodyVelocity")
-            speedForce.MaxForce = Vector3.new(1,0,1) * 100
+            speedForce.MaxForce = Vector3.new(1,0,1) * 3000 -- düşük ama etkili
+            speedForce.Velocity = Vector3.zero
             speedForce.Parent = root
         end
 
         local moveDir = hum.MoveDirection
-        speedForce.Velocity = moveDir * 50 -- 🔥 BURASI GERÇEK HIZ
+
+        -- YUMUŞAK hızlanma (en önemli kısım)
+        local targetSpeed = 100 -- 🔥 ideal güvenli hız
+        speedForce.Velocity = speedForce.Velocity:Lerp(moveDir * targetSpeed, 0.17)
 
     else
         hum.WalkSpeed = 16
@@ -158,7 +167,8 @@ local function applySpeed()
     end
 end
 
-RunService.RenderStepped:Connect(function()
+-- stabil çalışması için
+game:GetService("RunService").Heartbeat:Connect(function()
     applySpeed()
 end)
 
