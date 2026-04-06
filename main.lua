@@ -141,12 +141,12 @@ local function applySpeed()
 
         if not speedForce then
             speedForce = Instance.new("BodyVelocity")
-            speedForce.MaxForce = Vector3.new(1,0,1) * 100000
+            speedForce.MaxForce = Vector3.new(1,0,1) * 1000
             speedForce.Parent = root
         end
 
         local moveDir = hum.MoveDirection
-        speedForce.Velocity = moveDir * 600 -- 🔥 BURASI GERÇEK HIZ
+        speedForce.Velocity = moveDir * 300 -- 🔥 BURASI GERÇEK HIZ
 
     else
         hum.WalkSpeed = 16
