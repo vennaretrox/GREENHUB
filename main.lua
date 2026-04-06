@@ -1,8 +1,5 @@
--- GREENHUB FULL UPGRADE
+-- GREENHUB LOGO UPGRADE
 
-print("GREENHUB Loaded")
-
--- SERVICES
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -10,7 +7,7 @@ local UIS = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 
--- GUI PARENT
+-- GUI parent
 local function getGui()
     if gethui then return gethui() end
     return CoreGui or player:WaitForChild("PlayerGui")
@@ -22,15 +19,53 @@ gui.Parent = getGui()
 
 -- OPEN BUTTON (GH LOGO)
 local openBtn = Instance.new("TextButton", gui)
-openBtn.Size = UDim2.fromOffset(60,60)
-openBtn.Position = UDim2.new(0,20,0.5,-30)
+openBtn.Size = UDim2.fromOffset(100,100) -- daha büyük
+openBtn.Position = UDim2.new(0,20,0,20) -- istediğin yere başla
+openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0) -- siyah arka plan
 openBtn.Text = "GH"
-openBtn.BackgroundColor3 = Color3.fromRGB(0,200,100)
-openBtn.TextColor3 = Color3.new(1,1,1)
+openBtn.TextColor3 = Color3.fromRGB(0,255,0) -- parlak yeşil
 openBtn.Font = Enum.Font.GothamBlack
-Instance.new("UICorner", openBtn).CornerRadius = UDim.new(1,0)
+openBtn.TextScaled = true -- yazıyı büyüt
+openBtn.AutoButtonColor = false
+openBtn.BorderSizePixel = 0
 
--- MAIN FRAME
+-- LED efekt (outline)
+local led = Instance.new("UIStroke", openBtn)
+led.Color = Color3.fromRGB(0,255,0) -- yeşil LED
+led.Thickness = 2
+led.Transparency = 0.3
+
+-- drag için değişkenler
+local dragging = false
+local dragStart, startPos
+
+openBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = openBtn.Position
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        openBtn.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- MAIN HUB
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromOffset(400,250)
 main.Position = UDim2.new(0.5,-200,0.5,-125)
@@ -56,22 +91,25 @@ container.BackgroundTransparency = 1
 local layout = Instance.new("UIListLayout", container)
 layout.Padding = UDim.new(0,8)
 
--- BUTTON CREATOR
-local function createButton(text, callback)
-    local btn = Instance.new("TextButton", container)
-    btn.Size = UDim2.new(1,0,0,35)
-    btn.Text = text
-    btn.BackgroundColor3 = Color3.fromRGB(40,60,40)
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.Font = Enum.Font.GothamBold
-    Instance.new("UICorner", btn)
-    btn.MouseButton1Click:Connect(callback)
-end
-
--- SPEED TOGGLE
+-- SPEED TOGGLE BUTTON
 local speedOn = false
-createButton("Speed [OFF]", function()
+local speedBtn = Instance.new("TextButton", container)
+speedBtn.Size = UDim2.new(1,0,0,35)
+speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144) -- açık yeşil
+speedBtn.Text = "Speed [OFF]"
+speedBtn.TextColor3 = Color3.new(0,0,0)
+speedBtn.Font = Enum.Font.GothamBold
+Instance.new("UICorner", speedBtn)
+
+speedBtn.MouseButton1Click:Connect(function()
     speedOn = not speedOn
+    if speedOn then
+        speedBtn.Text = "Speed [ON]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0) -- koyu yeşil
+    else
+        speedBtn.Text = "Speed [OFF]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144) -- açık yeşil
+    end
 end)
 
 -- SPEED LOOP
@@ -83,48 +121,14 @@ task.spawn(function()
             if char then
                 local hum = char:FindFirstChildOfClass("Humanoid")
                 if hum then
-                    hum.WalkSpeed = 50
+                    hum.WalkSpeed = 80
                 end
             end
         end
     end
 end)
 
--- DRAG SYSTEM
-local dragging = false
-local dragStart, startPos
-
-title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = main.Position
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
--- OPEN/CLOSE
+-- OPEN/CLOSE HUB
 openBtn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
 end)
-
--- ANIM
-main.Position = UDim2.new(0.5,-200,0.4,-125)
-TweenService:Create(main, TweenInfo.new(0.3), {Position = UDim2.new(0.5,-200,0.5,-125)}):Play()
