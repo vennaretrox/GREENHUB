@@ -1,4 +1,4 @@
--- GREENHUB V2: Modern GH Logo + Speed Working + LED Halo
+-- GREENHUB V3: Minimal Square Logo + Speed 250
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -18,28 +18,26 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "GreenHub"
 gui.Parent = getGui()
 
--- OPEN BUTTON (GH LOGO)
+-- OPEN BUTTON (Square Logo)
 local openBtn = Instance.new("TextButton", gui)
-openBtn.Size = UDim2.fromOffset(90,90)
+openBtn.Size = UDim2.fromOffset(80,80) -- küçük kare
 openBtn.Position = UDim2.new(0,20,0,20)
 openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-openBtn.Text = "GH"
+openBtn.Text = "GREENHUB"
 openBtn.TextColor3 = Color3.fromRGB(0,255,0)
-openBtn.Font = Enum.Font.Gotham
+openBtn.Font = Enum.Font.GothamSemibold
 openBtn.TextScaled = true
 openBtn.AutoButtonColor = false
 openBtn.BorderSizePixel = 0
 openBtn.TextStrokeTransparency = 0.7
 
--- LED halo
-local led = Instance.new("UICorner", openBtn)
-led.CornerRadius = UDim.new(0.5,0) -- yuvarlak halo
+-- LED halo (kare etrafı)
 local halo = Instance.new("UIStroke", openBtn)
 halo.Color = Color3.fromRGB(0,255,0)
-halo.Thickness = 2
+halo.Thickness = 1.5
 halo.Transparency = 0.2
 
--- LED pulse animation (neon efekti)
+-- LED pulse
 local pulseDir = 1
 RunService.RenderStepped:Connect(function(dt)
     local t = halo.Transparency + dt*0.8*pulseDir
@@ -98,7 +96,7 @@ title.Size = UDim2.new(1,0,0,50)
 title.Text = "GREEN HUB"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(0,255,100)
-title.Font = Enum.Font.Gotham
+title.Font = Enum.Font.GothamSemibold
 title.TextSize = 24
 
 -- BUTTON CONTAINER
@@ -117,7 +115,7 @@ speedBtn.Size = UDim2.new(1,0,0,45)
 speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
 speedBtn.Text = "Speed [OFF]"
 speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
-speedBtn.Font = Enum.Font.GothamBold
+speedBtn.Font = Enum.Font.GothamSemibold
 speedBtn.TextSize = 22
 Instance.new("UICorner", speedBtn)
 
@@ -148,12 +146,12 @@ end)
 -- SPEED LOOP
 task.spawn(function()
     while true do
-        task.wait(0.05) -- hızlı update, lag minimum
+        task.wait(0.05)
         local char = player.Character
         if char then
             local hum = char:FindFirstChildOfClass("Humanoid")
             if hum then
-                hum.WalkSpeed = speedOn and 120 or 16 -- oyun hız halkası gibi hızlı
+                hum.WalkSpeed = speedOn and 250 or 16 -- coil speed
             end
         end
     end
