@@ -169,7 +169,7 @@ task.spawn(function()
         if char then
             local hum = char:FindFirstChildOfClass("Humanoid")
             if hum then
-                hum.WalkSpeed = speedOn and 1000 or 16
+                hum.WalkSpeed = speedOn and 700
             end
         end
     end
