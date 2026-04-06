@@ -126,52 +126,29 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- FINAL LEGIT SPEED SYSTEM (ANTI-LAG + ANTI-KICK)
+-- SAFE SPEED (ANTI-DEATH + ANTI-RESET)
 
 local speedOn = false
-local speedForce = nil
 
-local function applySpeed()
+game:GetService("RunService").Heartbeat:Connect(function()
+    if not speedOn then return end
+
     local char = player.Character
     if not char then return end
 
-    local root = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
 
-    if not root or not hum then return end
+    if not hum or not root then return end
 
-    if speedOn then
-        -- normalden biraz hızlı (şüphe çekmez)
-        hum.WalkSpeed = 27
+    -- sürekli küçük boost (farkedilmez)
+    hum.WalkSpeed = 20
 
-        if not speedForce then
-            speedForce = Instance.new("BodyVelocity")
-            speedForce.MaxForce = Vector3.new(1,0,1) * 3000 -- düşük ama etkili
-            speedForce.Velocity = Vector3.zero
-            speedForce.Parent = root
-        end
-
-        local moveDir = hum.MoveDirection
-
-        -- YUMUŞAK hızlanma (en önemli kısım)
-        local targetSpeed = 100 -- 🔥 ideal güvenli hız
-        speedForce.Velocity = speedForce.Velocity:Lerp(moveDir * targetSpeed, 1.1)
-
-    else
-        hum.WalkSpeed = 16
-
-        if speedForce then
-            speedForce:Destroy()
-            speedForce = nil
-        end
+    -- ileri doğru hafif itme
+    if hum.MoveDirection.Magnitude > 0 then
+        root.CFrame = root.CFrame + (hum.MoveDirection * 1.5)
     end
-end
-
--- stabil çalışması için
-game:GetService("RunService").Heartbeat:Connect(function()
-    applySpeed()
-end)
-
+end)   
 -- OPEN/CLOSE
 openBtn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
