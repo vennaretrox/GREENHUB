@@ -143,9 +143,11 @@ speedBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------
--- HYBRID SPEED (SMOOTH + NO RESET)
+-- MULTIPLIER SPEED (SERVER-LIKE SYSTEM)
 
 local speedOn = false
+local NORMAL_SPEED = 16
+local SPEED_MULTIPLIER = 2 -- burayı artırabilirsin
 
 speedBtn.MouseButton1Click:Connect(function()
     speedOn = not speedOn
@@ -158,7 +160,7 @@ speedBtn.MouseButton1Click:Connect(function()
         speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
 
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        if hum then hum.WalkSpeed = 16 end
+        if hum then hum.WalkSpeed = NORMAL_SPEED end
     end
 end)
 
@@ -169,25 +171,14 @@ RunService.Heartbeat:Connect(function()
     if not char then return end
 
     local hum = char:FindFirstChildOfClass("Humanoid")
-    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or hum.Health <= 0 then return end
 
-    if not hum or not root then return end
+    -- sürekli server gibi hız ver
+    local targetSpeed = NORMAL_SPEED * SPEED_MULTIPLIER
 
-    -- sürekli resetlenmeye karşı
-    hum.WalkSpeed = 20
-
-    -- hareket varsa boost
-    if hum.MoveDirection.Magnitude > 0 then
-        
-        -- çok küçük teleport (yakalanmaz)
-        root.CFrame = root.CFrame + (hum.MoveDirection * 0.6)
-
-        -- hafif momentum (lag yapmaz)
-        root.Velocity = Vector3.new(
-            hum.MoveDirection.X * 3,
-            root.Velocity.Y,
-            hum.MoveDirection.Z * 3
-        )
+    -- sadece düşükse artır (anti reset)
+    if hum.WalkSpeed < targetSpeed then
+        hum.WalkSpeed = targetSpeed
     end
 end)
 --------------------------------------------------
