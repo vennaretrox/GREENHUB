@@ -147,7 +147,7 @@ end)
 
 local speedOn = false
 local NORMAL_SPEED = 16
-local SPEED_MULTIPLIER = 2 -- burayı artırabilirsin
+local SPEED_MULTIPLIER = 4 -- burayı artırabilirsin
 
 speedBtn.MouseButton1Click:Connect(function()
     speedOn = not speedOn
