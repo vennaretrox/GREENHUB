@@ -1,13 +1,13 @@
--- GREENHUB FINAL STABLE (HIGH SPEED)
+-- GREENHUB ULTRA CLEAN (SINGLE SPEED + MICRO TP)
+
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
-local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- GUI Parent
+-- GUI
 local function getGui()
     if gethui then return gethui() end
     return CoreGui or player:WaitForChild("PlayerGui")
@@ -18,7 +18,7 @@ gui.Name = "GreenHub"
 gui.Parent = getGui()
 
 --------------------------------------------------
--- LOGO (Dikdörtgen + LED + Animasyon)
+-- LOGO
 --------------------------------------------------
 local openBtn = Instance.new("TextButton", gui)
 openBtn.Size = UDim2.fromOffset(120,40)
@@ -26,7 +26,7 @@ openBtn.Position = UDim2.new(0,20,0,20)
 openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
 openBtn.Text = "GH"
 openBtn.TextColor3 = Color3.fromRGB(0,255,0)
-openBtn.Font = Enum.Font.Gotham
+openBtn.Font = Enum.Font.GothamBold
 openBtn.TextScaled = true
 openBtn.BorderSizePixel = 0
 
@@ -34,11 +34,10 @@ local stroke = Instance.new("UIStroke", openBtn)
 stroke.Color = Color3.fromRGB(0,255,0)
 stroke.Thickness = 1.5
 
--- Logo animasyonu
+-- Animasyon (koyu → normal yeşil)
 RunService.Heartbeat:Connect(function()
-    local t = tick() % 2
-    if t < 1 then
-        openBtn.TextColor3 = Color3.fromRGB(0,200,0)
+    if tick() % 2 < 1 then
+        openBtn.TextColor3 = Color3.fromRGB(0,180,0)
     else
         openBtn.TextColor3 = Color3.fromRGB(0,255,0)
     end
@@ -48,8 +47,12 @@ end)
 openBtn.MouseEnter:Connect(function() openBtn.Text = "GREENHUB" end)
 openBtn.MouseLeave:Connect(function() openBtn.Text = "GH" end)
 
--- Drag
-local dragging, dragStart, startPos = false, nil, nil
+--------------------------------------------------
+-- DRAG
+--------------------------------------------------
+local dragging = false
+local dragStart, startPos
+
 openBtn.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
@@ -86,40 +89,42 @@ main.BackgroundColor3 = Color3.fromRGB(15,25,15)
 main.Visible = false
 Instance.new("UICorner", main)
 
--- LED border
 local border = Instance.new("UIStroke", main)
 border.Color = Color3.fromRGB(0,255,0)
 border.Thickness = 2
 
--- TITLE
+-- TITLE (KALIN YAPILDI)
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1,0,0,40)
 title.Text = "GREENHUB"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(0,255,100)
-title.Font = Enum.Font.Gotham
-title.TextSize = 22
+title.Font = Enum.Font.GothamBold -- 🔥 BURASI KALIN
+title.TextSize = 24
 
+--------------------------------------------------
 -- CONTAINER
+--------------------------------------------------
 local container = Instance.new("Frame", main)
 container.Position = UDim2.new(0,10,0,50)
 container.Size = UDim2.new(1,-20,1,-60)
 container.BackgroundTransparency = 1
-local layout = Instance.new("UIListLayout", container)
-layout.Padding = UDim.new(0,10)
+Instance.new("UIListLayout", container).Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SPEED BUTTON (STABLE OLD SYSTEM)
+-- SINGLE SPEED (LEGIT + MICRO TP)
 --------------------------------------------------
 local speedOn = false
 local NORMAL_SPEED = 16
-local TARGET_SPEED = 100 -- yüksek hız (anti-reset ile güvenli)
+local ADD_SPEED = 8 -- hız (6-10 arası ideal)
+local TP_POWER = 0.7 -- micro teleport gücü
+
 local speedBtn = Instance.new("TextButton", container)
 speedBtn.Size = UDim2.new(1,0,0,40)
 speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
 speedBtn.Text = "Speed [OFF]"
 speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
-speedBtn.Font = Enum.Font.Gotham
+speedBtn.Font = Enum.Font.GothamBold
 speedBtn.TextSize = 20
 Instance.new("UICorner", speedBtn)
 
@@ -131,36 +136,6 @@ speedBtn.MouseButton1Click:Connect(function()
     else
         speedBtn.Text = "Speed [OFF]"
         speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        if hum then hum.WalkSpeed = NORMAL_SPEED end
-    end
-end)
-
---------------------------------------------------
--- LEGIT SPEED (ANTI-CHEAT SAFE)
---------------------------------------------------
-
-local legitOn = false
-local NORMAL_SPEED = 16
-local ADD_SPEED = 6 -- max +6 (çok safe)
-
-local speedBtn = Instance.new("TextButton", container)
-speedBtn.Size = UDim2.new(1,0,0,40)
-speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-speedBtn.Text = "Legit Speed [OFF]"
-speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
-speedBtn.Font = Enum.Font.Gotham
-speedBtn.TextSize = 20
-Instance.new("UICorner", speedBtn)
-
-speedBtn.MouseButton1Click:Connect(function()
-    legitOn = not legitOn
-    if legitOn then
-        speedBtn.Text = "Legit Speed [ON]"
-        speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
-    else
-        speedBtn.Text = "Legit Speed [OFF]"
-        speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
 
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.WalkSpeed = NORMAL_SPEED end
@@ -168,33 +143,33 @@ speedBtn.MouseButton1Click:Connect(function()
 end)
 
 RunService.Heartbeat:Connect(function()
-    if not legitOn then return end
+    if not speedOn then return end
 
     local char = player.Character
     if not char then return end
 
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
 
-    -- Yumuşak geçiş (anti-detect)
     local target = NORMAL_SPEED + ADD_SPEED
 
+    -- legit speed (yumuşak artış)
     if hum.MoveDirection.Magnitude > 0.1 then
-        hum.WalkSpeed = hum.WalkSpeed + 0.5
+        hum.WalkSpeed = math.min(hum.WalkSpeed + 0.6, target)
 
-        if hum.WalkSpeed > target then
-            hum.WalkSpeed = target
-        end
+        -- micro teleport (çok küçük, anti lag)
+        root.CFrame = root.CFrame + (hum.MoveDirection * TP_POWER)
     else
         -- durunca normale dön
-        if hum.WalkSpeed > NORMAL_SPEED then
-            hum.WalkSpeed = hum.WalkSpeed - 1
-        end
+        hum.WalkSpeed = math.max(hum.WalkSpeed - 1, NORMAL_SPEED)
     end
 end)
+
 --------------------------------------------------
--- OPEN/CLOSE HUB
+-- OPEN / CLOSE
 --------------------------------------------------
 openBtn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
 end)
+
