@@ -1,4 +1,4 @@
--- GREENHUB FINAL (REAL SPEED SYSTEM)
+-- GREENHUB FINAL (FULL FIXED)
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -8,7 +8,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- GUI parent
+-- GUI
 local function getGui()
     if gethui then return gethui() end
     return CoreGui or player:WaitForChild("PlayerGui")
@@ -18,34 +18,37 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "GreenHub"
 gui.Parent = getGui()
 
--- LOGO (dikdörtgen)
+--------------------------------------------------
+-- LOGO (DİKDÖRTGEN + LED)
+--------------------------------------------------
+
 local openBtn = Instance.new("TextButton", gui)
-openBtn.Size = UDim2.fromOffset(120,50)
+openBtn.Size = UDim2.fromOffset(120,40)
 openBtn.Position = UDim2.new(0,20,0,20)
 openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
 openBtn.Text = "GH"
 openBtn.TextColor3 = Color3.fromRGB(0,255,0)
-openBtn.Font = Enum.Font.GothamSemibold
+openBtn.Font = Enum.Font.GothamBold
 openBtn.TextScaled = true
 openBtn.BorderSizePixel = 0
 
--- LED border
 local stroke = Instance.new("UIStroke", openBtn)
 stroke.Color = Color3.fromRGB(0,255,0)
-stroke.Thickness = 1.5
+stroke.Thickness = 1
 
--- Hover text
+-- Hover
 openBtn.MouseEnter:Connect(function()
     openBtn.Text = "GREENHUB"
-    TweenService:Create(openBtn, TweenInfo.new(0.15), {TextColor3=Color3.fromRGB(0,255,180)}):Play()
 end)
 
 openBtn.MouseLeave:Connect(function()
     openBtn.Text = "GH"
-    TweenService:Create(openBtn, TweenInfo.new(0.15), {TextColor3=Color3.fromRGB(0,255,0)}):Play()
 end)
 
+--------------------------------------------------
 -- DRAG
+--------------------------------------------------
+
 local dragging = false
 local dragStart, startPos
 
@@ -75,24 +78,35 @@ UIS.InputEnded:Connect(function(input)
     end
 end)
 
+--------------------------------------------------
 -- MAIN HUB
+--------------------------------------------------
+
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromOffset(400,250)
 main.Position = UDim2.new(0.5,-200,0.5,-125)
 main.BackgroundColor3 = Color3.fromRGB(15,25,15)
-Instance.new("UICorner", main)
 main.Visible = false
+Instance.new("UICorner", main)
 
--- TITLE
+-- LED BORDER (İSTEDİĞİN GİBİ)
+local border = Instance.new("UIStroke", main)
+border.Color = Color3.fromRGB(144,255,144)
+border.Thickness = 1.5
+
+-- TITLE (KALIN)
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1,0,0,40)
-title.Text = "GREEN HUB"
+title.Text = "GREENHUB"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(0,255,100)
-title.Font = Enum.Font.GothamSemibold
-title.TextSize = 20
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
 
+--------------------------------------------------
 -- CONTAINER
+--------------------------------------------------
+
 local container = Instance.new("Frame", main)
 container.Position = UDim2.new(0,10,0,50)
 container.Size = UDim2.new(1,-20,1,-60)
@@ -101,16 +115,18 @@ container.BackgroundTransparency = 1
 local layout = Instance.new("UIListLayout", container)
 layout.Padding = UDim.new(0,10)
 
--- SPEED SYSTEM
+--------------------------------------------------
+-- SPEED BUTTON
+--------------------------------------------------
+
 local speedOn = false
-local speedForce = nil
 
 local speedBtn = Instance.new("TextButton", container)
 speedBtn.Size = UDim2.new(1,0,0,40)
 speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
 speedBtn.Text = "Speed [OFF]"
 speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
-speedBtn.Font = Enum.Font.GothamSemibold
+speedBtn.Font = Enum.Font.GothamBold
 speedBtn.TextSize = 20
 Instance.new("UICorner", speedBtn)
 
@@ -126,11 +142,11 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SAFE SPEED (ANTI-DEATH + ANTI-RESET)
+--------------------------------------------------
+-- FINAL SPEED SYSTEM (STABLE + STRONG)
+--------------------------------------------------
 
-local speedOn = false
-
-game:GetService("RunService").Heartbeat:Connect(function()
+RunService.Heartbeat:Connect(function()
     if not speedOn then return end
 
     local char = player.Character
@@ -141,15 +157,23 @@ game:GetService("RunService").Heartbeat:Connect(function()
 
     if not hum or not root then return end
 
-    -- sürekli küçük boost (farkedilmez)
-    hum.WalkSpeed = 27
+    -- stabil hız
+    hum.WalkSpeed = 30
 
-    -- ileri doğru hafif itme
-    if hum.MoveDirection.Magnitude > 0.1 then
-        root.CFrame = root.CFrame + (hum.MoveDirection * 1.5)
+    if hum.MoveDirection.Magnitude > 0 then
+        
+        -- coil benzeri ileri kaydırma
+        root.CFrame = root.CFrame + (hum.MoveDirection * 2)
+
+        -- ekstra momentum
+        root.Velocity = root.Velocity + (hum.MoveDirection * 5)
     end
-end)   
--- OPEN/CLOSE
+end)
+
+--------------------------------------------------
+-- OPEN / CLOSE
+--------------------------------------------------
+
 openBtn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
 end)
