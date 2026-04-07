@@ -116,7 +116,7 @@ Instance.new("UIListLayout", container).Padding = UDim.new(0,10)
 --------------------------------------------------
 local speedOn = false
 local NORMAL_SPEED = 16
-local ADD_SPEED = 5 -- hız (6-10 arası ideal)
+local ADD_SPEED = 6 -- hız (6-10 arası ideal)
 
 local speedBtn = Instance.new("TextButton", container)
 speedBtn.Size = UDim2.new(1,0,0,40)
