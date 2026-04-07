@@ -147,7 +147,7 @@ RunService.Heartbeat:Connect(function()
 
     -- Smooth hız artışı
     if currentSpeed < TARGET_SPEED then
-        currentSpeed = currentSpeed + 4
+        currentSpeed = currentSpeed + 1
     end
     hum.WalkSpeed = currentSpeed
 
