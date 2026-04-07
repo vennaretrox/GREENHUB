@@ -143,8 +143,24 @@ speedBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------
--- FINAL SPEED SYSTEM (STABLE + STRONG)
---------------------------------------------------
+-- ULTRA SAFE SPEED (SERVER UYUMLU)
+
+local speedOn = false
+
+speedBtn.MouseButton1Click:Connect(function()
+    speedOn = not speedOn
+
+    if speedOn then
+        speedBtn.Text = "Speed [ON]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
+    else
+        speedBtn.Text = "Speed [OFF]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
+        
+        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.WalkSpeed = 16 end
+    end
+end)
 
 RunService.Heartbeat:Connect(function()
     if not speedOn then return end
@@ -153,23 +169,13 @@ RunService.Heartbeat:Connect(function()
     if not char then return end
 
     local hum = char:FindFirstChildOfClass("Humanoid")
-    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum then return end
 
-    if not hum or not root then return end
-
-    -- stabil hız
-    hum.WalkSpeed = 24
-
-    if hum.MoveDirection.Magnitude > 0 then
-        
-        -- coil benzeri ileri kaydırma
-        root.CFrame = root.CFrame + (hum.MoveDirection * 0.5)
-
-        -- ekstra momentum
-        root.Velocity = root.Velocity + (hum.MoveDirection * 2)
+    -- server'ın izin verdiği maksimum stabil hız
+    if hum.WalkSpeed < 22 then
+        hum.WalkSpeed = 22
     end
 end)
-
 --------------------------------------------------
 -- OPEN / CLOSE
 --------------------------------------------------
