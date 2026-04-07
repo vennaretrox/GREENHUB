@@ -158,7 +158,7 @@ RunService.Heartbeat:Connect(function()
     if not hum or not root then return end
 
     -- stabil hız
-    hum.WalkSpeed = 15
+    hum.WalkSpeed = 10
 
     if hum.MoveDirection.Magnitude > 0 then
         
