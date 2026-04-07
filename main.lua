@@ -174,7 +174,7 @@ RunService.Heartbeat:Connect(function()
     if not hum or not root then return end
 
     -- sürekli resetlenmeye karşı
-    hum.WalkSpeed = 23
+    hum.WalkSpeed = 20
 
     -- hareket varsa boost
     if hum.MoveDirection.Magnitude > 0 then
