@@ -158,15 +158,15 @@ RunService.Heartbeat:Connect(function()
     if not hum or not root then return end
 
     -- stabil hız
-    hum.WalkSpeed = 10
+    hum.WalkSpeed = 24
 
     if hum.MoveDirection.Magnitude > 0 then
         
         -- coil benzeri ileri kaydırma
-        root.CFrame = root.CFrame + (hum.MoveDirection * 0.5)
+        root.CFrame = root.CFrame + (hum.MoveDirection * 0.8)
 
         -- ekstra momentum
-        root.Velocity = root.Velocity + (hum.MoveDirection * 0.5)
+        root.Velocity = root.Velocity + (hum.MoveDirection * 2)
     end
 end)
 
