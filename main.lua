@@ -143,7 +143,7 @@ speedBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------------------
--- ULTRA SAFE SPEED (SERVER UYUMLU)
+-- HYBRID SPEED (SMOOTH + NO RESET)
 
 local speedOn = false
 
@@ -156,7 +156,7 @@ speedBtn.MouseButton1Click:Connect(function()
     else
         speedBtn.Text = "Speed [OFF]"
         speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-        
+
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.WalkSpeed = 16 end
     end
@@ -169,11 +169,25 @@ RunService.Heartbeat:Connect(function()
     if not char then return end
 
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
 
-    -- server'ın izin verdiği maksimum stabil hız
-    if hum.WalkSpeed < 27 then
-        hum.WalkSpeed = 29
+    if not hum or not root then return end
+
+    -- sürekli resetlenmeye karşı
+    hum.WalkSpeed = 25
+
+    -- hareket varsa boost
+    if hum.MoveDirection.Magnitude > 0 then
+        
+        -- çok küçük teleport (yakalanmaz)
+        root.CFrame = root.CFrame + (hum.MoveDirection * 0.6)
+
+        -- hafif momentum (lag yapmaz)
+        root.Velocity = Vector3.new(
+            hum.MoveDirection.X * 3,
+            root.Velocity.Y,
+            hum.MoveDirection.Z * 3
+        )
     end
 end)
 --------------------------------------------------
