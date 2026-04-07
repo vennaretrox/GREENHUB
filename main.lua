@@ -1,5 +1,4 @@
--- GREENHUB FINAL (FULL FIXED)
-
+-- GREENHUB ULTRA FINAL
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -8,7 +7,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- GUI
+-- GUI parent
 local function getGui()
     if gethui then return gethui() end
     return CoreGui or player:WaitForChild("PlayerGui")
@@ -19,39 +18,38 @@ gui.Name = "GreenHub"
 gui.Parent = getGui()
 
 --------------------------------------------------
--- LOGO (DİKDÖRTGEN + LED)
+-- LOGO (DİKDÖRTGEN + LED + ANİMASYON)
 --------------------------------------------------
-
 local openBtn = Instance.new("TextButton", gui)
 openBtn.Size = UDim2.fromOffset(120,40)
 openBtn.Position = UDim2.new(0,20,0,20)
 openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
 openBtn.Text = "GH"
 openBtn.TextColor3 = Color3.fromRGB(0,255,0)
-openBtn.Font = Enum.Font.GothamBold
+openBtn.Font = Enum.Font.Gotham
 openBtn.TextScaled = true
 openBtn.BorderSizePixel = 0
 
 local stroke = Instance.new("UIStroke", openBtn)
 stroke.Color = Color3.fromRGB(0,255,0)
-stroke.Thickness = 1
+stroke.Thickness = 1.5
 
--- Hover
-openBtn.MouseEnter:Connect(function()
-    openBtn.Text = "GREENHUB"
+-- Logo animation (dark green ↔ normal green)
+RunService.Heartbeat:Connect(function()
+    local t = tick() % 2
+    if t < 1 then
+        openBtn.TextColor3 = Color3.fromRGB(0,180,0)
+    else
+        openBtn.TextColor3 = Color3.fromRGB(0,255,0)
+    end
 end)
 
-openBtn.MouseLeave:Connect(function()
-    openBtn.Text = "GH"
-end)
+-- Hover effect
+openBtn.MouseEnter:Connect(function() openBtn.Text = "GREENHUB" end)
+openBtn.MouseLeave:Connect(function() openBtn.Text = "GH" end)
 
---------------------------------------------------
--- DRAG
---------------------------------------------------
-
-local dragging = false
-local dragStart, startPos
-
+-- Drag
+local dragging, dragStart, startPos = false, nil, nil
 openBtn.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
@@ -79,9 +77,8 @@ UIS.InputEnded:Connect(function(input)
 end)
 
 --------------------------------------------------
--- MAIN HUB
+-- MAIN HUB (LED + TITLE)
 --------------------------------------------------
-
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromOffset(400,250)
 main.Position = UDim2.new(0.5,-200,0.5,-125)
@@ -89,102 +86,80 @@ main.BackgroundColor3 = Color3.fromRGB(15,25,15)
 main.Visible = false
 Instance.new("UICorner", main)
 
--- LED BORDER (İSTEDİĞİN GİBİ)
 local border = Instance.new("UIStroke", main)
-border.Color = Color3.fromRGB(144,255,144)
-border.Thickness = 1.5
+border.Color = Color3.fromRGB(0,255,0)
+border.Thickness = 2
 
--- TITLE (KALIN)
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1,0,0,40)
 title.Text = "GREENHUB"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(0,255,100)
-title.Font = Enum.Font.GothamBold
+title.Font = Enum.Font.Gotham
 title.TextSize = 22
-
---------------------------------------------------
--- CONTAINER
---------------------------------------------------
 
 local container = Instance.new("Frame", main)
 container.Position = UDim2.new(0,10,0,50)
 container.Size = UDim2.new(1,-20,1,-60)
 container.BackgroundTransparency = 1
-
 local layout = Instance.new("UIListLayout", container)
 layout.Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SPEED BUTTON
+-- SPEED BUTTON (GİZLİ SPEED)
 --------------------------------------------------
-
 local speedOn = false
+local NORMAL_SPEED = 16
+local TARGET_SPEED = 50
+local currentSpeed = NORMAL_SPEED
 
 local speedBtn = Instance.new("TextButton", container)
 speedBtn.Size = UDim2.new(1,0,0,40)
 speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
 speedBtn.Text = "Speed [OFF]"
 speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
-speedBtn.Font = Enum.Font.GothamBold
+speedBtn.Font = Enum.Font.Gotham
 speedBtn.TextSize = 20
 Instance.new("UICorner", speedBtn)
 
 speedBtn.MouseButton1Click:Connect(function()
     speedOn = not speedOn
-
     if speedOn then
         speedBtn.Text = "Speed [ON]"
         speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
     else
         speedBtn.Text = "Speed [OFF]"
         speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-    end
-end)
-
---------------------------------------------------
--- MULTIPLIER SPEED (SERVER-LIKE SYSTEM)
-
-local speedOn = false
-local NORMAL_SPEED = 16
-local SPEED_MULTIPLIER = 5.7 -- burayı artırabilirsin
-
-speedBtn.MouseButton1Click:Connect(function()
-    speedOn = not speedOn
-
-    if speedOn then
-        speedBtn.Text = "Speed [ON]"
-        speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
-    else
-        speedBtn.Text = "Speed [OFF]"
-        speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-
+        currentSpeed = NORMAL_SPEED
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.WalkSpeed = NORMAL_SPEED end
     end
 end)
 
+-- Gizli speed sistemi (smooth, anti-reset)
 RunService.Heartbeat:Connect(function()
     if not speedOn then return end
-
     local char = player.Character
     if not char then return end
-
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum or hum.Health <= 0 then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
 
-    -- sürekli server gibi hız ver
-    local targetSpeed = NORMAL_SPEED * SPEED_MULTIPLIER
+    -- Smooth hız artışı
+    if currentSpeed < TARGET_SPEED then
+        currentSpeed = currentSpeed + 4
+    end
+    hum.WalkSpeed = currentSpeed
 
-    -- sadece düşükse artır (anti reset)
-    if hum.WalkSpeed < targetSpeed then
-        hum.WalkSpeed = targetSpeed
+    -- Hafif ileri ışınlama
+    if hum.MoveDirection.Magnitude > 0.1 then
+        root.CFrame = root.CFrame + (hum.MoveDirection * 0.5)
     end
 end)
---------------------------------------------------
--- OPEN / CLOSE
---------------------------------------------------
 
+--------------------------------------------------
+-- OPEN/CLOSE HUB
+--------------------------------------------------
 openBtn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
 end)
