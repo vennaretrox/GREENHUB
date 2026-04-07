@@ -172,8 +172,8 @@ RunService.Heartbeat:Connect(function()
     if not hum then return end
 
     -- server'ın izin verdiği maksimum stabil hız
-    if hum.WalkSpeed < 22 then
-        hum.WalkSpeed = 22
+    if hum.WalkSpeed < 27 then
+        hum.WalkSpeed = 29
     end
 end)
 --------------------------------------------------
