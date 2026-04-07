@@ -136,20 +136,30 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- MULTIPLIER SPEED (SERVER-LIKE SYSTEM)
+--------------------------------------------------
+-- LEGIT SPEED (ANTI-CHEAT SAFE)
+--------------------------------------------------
 
-local speedOn = false
+local legitOn = false
 local NORMAL_SPEED = 16
-local SPEED_MULTIPLIER = 5 -- burayı artırabilirsin
+local ADD_SPEED = 6 -- max +6 (çok safe)
+
+local speedBtn = Instance.new("TextButton", container)
+speedBtn.Size = UDim2.new(1,0,0,40)
+speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
+speedBtn.Text = "Legit Speed [OFF]"
+speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
+speedBtn.Font = Enum.Font.Gotham
+speedBtn.TextSize = 20
+Instance.new("UICorner", speedBtn)
 
 speedBtn.MouseButton1Click:Connect(function()
-    speedOn = not speedOn
-
-    if speedOn then
-        speedBtn.Text = "Speed [ON]"
+    legitOn = not legitOn
+    if legitOn then
+        speedBtn.Text = "Legit Speed [ON]"
         speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
     else
-        speedBtn.Text = "Speed [OFF]"
+        speedBtn.Text = "Legit Speed [OFF]"
         speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
 
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -158,23 +168,30 @@ speedBtn.MouseButton1Click:Connect(function()
 end)
 
 RunService.Heartbeat:Connect(function()
-    if not speedOn then return end
+    if not legitOn then return end
 
     local char = player.Character
     if not char then return end
 
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hum or hum.Health <= 0 then return end
+    if not hum then return end
 
-    -- sürekli server gibi hız ver
-    local targetSpeed = NORMAL_SPEED * SPEED_MULTIPLIER
+    -- Yumuşak geçiş (anti-detect)
+    local target = NORMAL_SPEED + ADD_SPEED
 
-    -- sadece düşükse artır (anti reset)
-    if hum.WalkSpeed < targetSpeed then
-        hum.WalkSpeed = targetSpeed
+    if hum.MoveDirection.Magnitude > 0.1 then
+        hum.WalkSpeed = hum.WalkSpeed + 0.5
+
+        if hum.WalkSpeed > target then
+            hum.WalkSpeed = target
+        end
+    else
+        -- durunca normale dön
+        if hum.WalkSpeed > NORMAL_SPEED then
+            hum.WalkSpeed = hum.WalkSpeed - 1
+        end
     end
 end)
-
 --------------------------------------------------
 -- OPEN/CLOSE HUB
 --------------------------------------------------
