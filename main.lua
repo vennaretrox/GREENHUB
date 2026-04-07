@@ -116,7 +116,7 @@ Instance.new("UIListLayout", container).Padding = UDim.new(0,10)
 --------------------------------------------------
 local speedOn = false
 local NORMAL_SPEED = 16
-local ADD_SPEED = 8 -- hız (6-10 arası ideal)
+local ADD_SPEED = 6 -- hız (6-10 arası ideal)
 local TP_POWER = 0.7 -- micro teleport gücü
 
 local speedBtn = Instance.new("TextButton", container)
