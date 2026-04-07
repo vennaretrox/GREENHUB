@@ -136,19 +136,42 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- STABLE HIGH SPEED SYSTEM
+-- MULTIPLIER SPEED (SERVER-LIKE SYSTEM)
+
+local speedOn = false
+local NORMAL_SPEED = 16
+local SPEED_MULTIPLIER = 6.7 -- burayı artırabilirsin
+
+speedBtn.MouseButton1Click:Connect(function()
+    speedOn = not speedOn
+
+    if speedOn then
+        speedBtn.Text = "Speed [ON]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
+    else
+        speedBtn.Text = "Speed [OFF]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
+
+        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.WalkSpeed = NORMAL_SPEED end
+    end
+end)
+
 RunService.Heartbeat:Connect(function()
     if not speedOn then return end
+
     local char = player.Character
     if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    local root = char:FindFirstChild("HumanoidRootPart")
-    if not hum or not root then return end
 
-    -- Hız ve ileri küçük hareket (Brainot gibi)
-    hum.WalkSpeed = TARGET_SPEED
-    if hum.MoveDirection.Magnitude > 0.1 then
-        root.CFrame = root.CFrame + (hum.MoveDirection * 0.5)
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum or hum.Health <= 0 then return end
+
+    -- sürekli server gibi hız ver
+    local targetSpeed = NORMAL_SPEED * SPEED_MULTIPLIER
+
+    -- sadece düşükse artır (anti reset)
+    if hum.WalkSpeed < targetSpeed then
+        hum.WalkSpeed = targetSpeed
     end
 end)
 
