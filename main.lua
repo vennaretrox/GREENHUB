@@ -163,10 +163,10 @@ RunService.Heartbeat:Connect(function()
     if hum.MoveDirection.Magnitude > 0 then
         
         -- coil benzeri ileri kaydırma
-        root.CFrame = root.CFrame + (hum.MoveDirection * 1)
+        root.CFrame = root.CFrame + (hum.MoveDirection * 0.7)
 
         -- ekstra momentum
-        root.Velocity = root.Velocity + (hum.MoveDirection * 4)
+        root.Velocity = root.Velocity + (hum.MoveDirection * 0.7)
     end
 end)
 
