@@ -1,4 +1,4 @@
--- GREENHUB ULTRA FINAL
+-- GREENHUB FINAL STABLE (HIGH SPEED)
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- GUI parent
+-- GUI Parent
 local function getGui()
     if gethui then return gethui() end
     return CoreGui or player:WaitForChild("PlayerGui")
@@ -18,7 +18,7 @@ gui.Name = "GreenHub"
 gui.Parent = getGui()
 
 --------------------------------------------------
--- LOGO (DİKDÖRTGEN + LED + ANİMASYON)
+-- LOGO (Dikdörtgen + LED + Animasyon)
 --------------------------------------------------
 local openBtn = Instance.new("TextButton", gui)
 openBtn.Size = UDim2.fromOffset(120,40)
@@ -34,17 +34,17 @@ local stroke = Instance.new("UIStroke", openBtn)
 stroke.Color = Color3.fromRGB(0,255,0)
 stroke.Thickness = 1.5
 
--- Logo animation (dark green ↔ normal green)
+-- Logo animasyonu
 RunService.Heartbeat:Connect(function()
     local t = tick() % 2
     if t < 1 then
-        openBtn.TextColor3 = Color3.fromRGB(0,180,0)
+        openBtn.TextColor3 = Color3.fromRGB(0,200,0)
     else
         openBtn.TextColor3 = Color3.fromRGB(0,255,0)
     end
 end)
 
--- Hover effect
+-- Hover
 openBtn.MouseEnter:Connect(function() openBtn.Text = "GREENHUB" end)
 openBtn.MouseLeave:Connect(function() openBtn.Text = "GH" end)
 
@@ -77,7 +77,7 @@ UIS.InputEnded:Connect(function(input)
 end)
 
 --------------------------------------------------
--- MAIN HUB (LED + TITLE)
+-- MAIN HUB
 --------------------------------------------------
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromOffset(400,250)
@@ -86,10 +86,12 @@ main.BackgroundColor3 = Color3.fromRGB(15,25,15)
 main.Visible = false
 Instance.new("UICorner", main)
 
+-- LED border
 local border = Instance.new("UIStroke", main)
 border.Color = Color3.fromRGB(0,255,0)
 border.Thickness = 2
 
+-- TITLE
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1,0,0,40)
 title.Text = "GREENHUB"
@@ -98,6 +100,7 @@ title.TextColor3 = Color3.fromRGB(0,255,100)
 title.Font = Enum.Font.Gotham
 title.TextSize = 22
 
+-- CONTAINER
 local container = Instance.new("Frame", main)
 container.Position = UDim2.new(0,10,0,50)
 container.Size = UDim2.new(1,-20,1,-60)
@@ -106,13 +109,11 @@ local layout = Instance.new("UIListLayout", container)
 layout.Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SPEED BUTTON (GİZLİ SPEED)
+-- SPEED BUTTON (STABLE OLD SYSTEM)
 --------------------------------------------------
 local speedOn = false
 local NORMAL_SPEED = 16
-local TARGET_SPEED = 50
-local currentSpeed = NORMAL_SPEED
-
+local TARGET_SPEED = 100 -- yüksek hız (anti-reset ile güvenli)
 local speedBtn = Instance.new("TextButton", container)
 speedBtn.Size = UDim2.new(1,0,0,40)
 speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
@@ -130,13 +131,12 @@ speedBtn.MouseButton1Click:Connect(function()
     else
         speedBtn.Text = "Speed [OFF]"
         speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-        currentSpeed = NORMAL_SPEED
         local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.WalkSpeed = NORMAL_SPEED end
     end
 end)
 
--- Gizli speed sistemi (smooth, anti-reset)
+-- STABLE HIGH SPEED SYSTEM
 RunService.Heartbeat:Connect(function()
     if not speedOn then return end
     local char = player.Character
@@ -145,13 +145,8 @@ RunService.Heartbeat:Connect(function()
     local root = char:FindFirstChild("HumanoidRootPart")
     if not hum or not root then return end
 
-    -- Smooth hız artışı
-    if currentSpeed < TARGET_SPEED then
-        currentSpeed = currentSpeed + 0.5
-    end
-    hum.WalkSpeed = currentSpeed
-
-    -- Hafif ileri ışınlama
+    -- Hız ve ileri küçük hareket (Brainot gibi)
+    hum.WalkSpeed = TARGET_SPEED
     if hum.MoveDirection.Magnitude > 0.1 then
         root.CFrame = root.CFrame + (hum.MoveDirection * 0.5)
     end
