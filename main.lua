@@ -96,8 +96,8 @@ Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 --------------------------------------------------
 local speed=false
 local NORMAL=16
-local BOOST=3
-local TP=0.5
+local BOOST=1
+local TP=0.1
 
 local sbtn=Instance.new("TextButton",cont)
 sbtn.Size=UDim2.new(1,0,0,40)
@@ -144,7 +144,7 @@ UIS.InputBegan:Connect(function(i,gp)
         local h=c:FindFirstChildOfClass("Humanoid")
 
         if r and h then
-            r.CFrame = r.CFrame + (h.MoveDirection * 16)
+            r.CFrame = r.CFrame + (h.MoveDirection * 17)
         end
     end
 end)
@@ -156,7 +156,7 @@ local basePos=nil
 
 player.CharacterAdded:Connect(function(char)
     local root=char:WaitForChild("HumanoidRootPart")
-    task.wait(1)
+    task.wait(2)
     basePos=root.CFrame
 end)
 
