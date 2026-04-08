@@ -96,7 +96,7 @@ Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 --------------------------------------------------
 local speed=false
 local NORMAL=16
-local BOOST=7
+local BOOST=3
 local TP=0.5
 
 local sbtn=Instance.new("TextButton",cont)
@@ -144,7 +144,7 @@ UIS.InputBegan:Connect(function(i,gp)
         local h=c:FindFirstChildOfClass("Humanoid")
 
         if r and h then
-            r.CFrame = r.CFrame + (h.MoveDirection * 18)
+            r.CFrame = r.CFrame + (h.MoveDirection * 16)
         end
     end
 end)
@@ -167,7 +167,7 @@ RunService.Heartbeat:Connect(function()
     local tool=c:FindFirstChildOfClass("Tool")
     if tool and tool.Name:lower():find("brain") then
         c.HumanoidRootPart.CFrame = basePos
-        task.wait(0.5)
+        task.wait(1.5)
     end
 end)
 
