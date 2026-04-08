@@ -92,41 +92,21 @@ cont.BackgroundTransparency = 1
 Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SPEED V2 (EN STABİL)
---------------------------------------------------
-local speed=false
-local NORMAL=16
-local BOOST=3
-local tp = 0.1  
-
-local sbtn=Instance.new("TextButton",cont)
-sbtn.Size=UDim2.new(1,0,0,41)
-sbtn.Text="Speed [OFF]"
-Instance.new("UICorner",sbtn)
-
-sbtn.MouseButton1Click:Connect(function()
-    speed=not speed
-    sbtn.Text=speed and "Speed [ON]" or "Speed [OFF]"
-end)
-
-RunService.RenderStepped:Connect(function()
-    if not speed then return end
-
-    local c=player.Character
-    if not c then return end
-
-    local h=c:FindFirstChildOfClass("Humanoid")
-    local r=c:FindFirstChild("HumanoidRootPart")
-    if not h or not r then return end
-
-    if h.MoveDirection.Magnitude>0 then
-        h.WalkSpeed = NORMAL + BOOST
-        r.CFrame = r.CFrame + (h.MoveDirection * TP)
-    else
-        h.WalkSpeed = NORMAL
+-- SPEED LOOP
+task.spawn(function()
+    while true do
+        task.wait(0.2)
+        if speedOn then
+            local char = player.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then
+                    hum.WalkSpeed = 40
+                end
+            end
+        end
     end
 end)
-
 --------------------------------------------------
 -- DASH (E TUŞU)
 --------------------------------------------------
