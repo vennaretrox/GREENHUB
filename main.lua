@@ -1,4 +1,4 @@
--- GREENHUB GOD STABLE FINAL (NO BUG)
+-- GREENHUB PERFECT FINAL
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -17,7 +17,7 @@ local gui = Instance.new("ScreenGui")
 gui.Parent = getGui()
 
 --------------------------------------------------
--- LOGO (ANİMASYON + DRAG)
+-- LOGO (LED + ANİMASYON + DRAG)
 --------------------------------------------------
 local btn = Instance.new("TextButton", gui)
 btn.Size = UDim2.fromOffset(120,40)
@@ -28,19 +28,35 @@ btn.TextColor3 = Color3.fromRGB(0,255,0)
 btn.Font = Enum.Font.GothamBold
 btn.TextScaled = true
 
-Instance.new("UIStroke", btn).Color = Color3.fromRGB(0,255,0)
+-- LED BORDER (İNCE DUVAR GİBİ)
+local stroke = Instance.new("UIStroke", btn)
+stroke.Color = Color3.fromRGB(0,255,0)
+stroke.Thickness = 2
 
--- glow animasyon
+-- GLOW ANİMASYON
 task.spawn(function()
     while true do
-        TweenService:Create(btn,TweenInfo.new(1),{TextColor3=Color3.fromRGB(0,180,0)}):Play()
-        task.wait(1)
-        TweenService:Create(btn,TweenInfo.new(1),{TextColor3=Color3.fromRGB(0,255,0)}):Play()
-        task.wait(1)
+        TweenService:Create(btn,TweenInfo.new(0.8),{
+            TextColor3 = Color3.fromRGB(0,180,0)
+        }):Play()
+        TweenService:Create(stroke,TweenInfo.new(0.8),{
+            Transparency = 0.2
+        }):Play()
+
+        task.wait(0.8)
+
+        TweenService:Create(btn,TweenInfo.new(0.8),{
+            TextColor3 = Color3.fromRGB(0,255,0)
+        }):Play()
+        TweenService:Create(stroke,TweenInfo.new(0.8),{
+            Transparency = 0
+        }):Play()
+
+        task.wait(0.8)
     end
 end)
 
--- drag
+-- DRAG (FIX)
 local dragging,dragStart,startPos
 
 btn.InputBegan:Connect(function(i)
@@ -65,7 +81,7 @@ UIS.InputEnded:Connect(function(i)
 end)
 
 --------------------------------------------------
--- MAIN (ANİMASYON)
+-- MAIN
 --------------------------------------------------
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromOffset(400,320)
@@ -92,12 +108,12 @@ cont.BackgroundTransparency = 1
 Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SPEED V2 (EN STABİL)
+-- SPEED (BALANCED)
 --------------------------------------------------
 local speed=false
 local NORMAL=16
-local BOOST=7
-local TP=0.5
+local BOOST=6
+local TP=0.4
 
 local sbtn=Instance.new("TextButton",cont)
 sbtn.Size=UDim2.new(1,0,0,40)
@@ -128,13 +144,14 @@ RunService.RenderStepped:Connect(function()
 end)
 
 --------------------------------------------------
--- DASH (E TUŞU)
+-- DASH (FIXED)
 --------------------------------------------------
 local lastDash=0
+
 UIS.InputBegan:Connect(function(i,gp)
     if gp then return end
     if i.KeyCode==Enum.KeyCode.E then
-        if tick()-lastDash<1 then return end
+        if tick()-lastDash<1.2 then return end
         lastDash=tick()
 
         local c=player.Character
@@ -144,53 +161,46 @@ UIS.InputBegan:Connect(function(i,gp)
         local h=c:FindFirstChildOfClass("Humanoid")
 
         if r and h then
-            r.CFrame = r.CFrame + (h.MoveDirection * 18)
+            local dir = h.MoveDirection
+            if dir.Magnitude > 0 then
+                r.CFrame = r.CFrame + (dir.Unit * 20)
+            end
         end
     end
 end)
 
 --------------------------------------------------
--- BASE TP (KESİN FIX)
+-- GERÇEK BASE TP (1.5 SN DELAY + CASH MULTİ ORTASI)
 --------------------------------------------------
-local basePos=nil
+local basePart = nil
 
-player.CharacterAdded:Connect(function(char)
-    local root=char:WaitForChild("HumanoidRootPart")
-    task.wait(1)
-    basePos=root.CFrame
+-- base bulma (cash / multiplier)
+task.spawn(function()
+    while true do
+        for _,v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Part") and v.Name:lower():find("cash") then
+                basePart = v
+            end
+        end
+        task.wait(2)
+    end
 end)
 
 RunService.Heartbeat:Connect(function()
     local c=player.Character
-    if not c or not basePos then return end
+    if not c or not basePart then return end
 
     local tool=c:FindFirstChildOfClass("Tool")
     if tool and tool.Name:lower():find("brain") then
-        c.HumanoidRootPart.CFrame = basePos
-        task.wait(0.5)
+        task.wait(1.5)
+
+        c.HumanoidRootPart.CFrame =
+            basePart.CFrame + Vector3.new(0,3,0)
     end
 end)
 
 --------------------------------------------------
--- SAFE TP (BUTON)
---------------------------------------------------
-local tpBtn=Instance.new("TextButton",cont)
-tpBtn.Size=UDim2.new(1,0,0,40)
-tpBtn.Text="Safe TP"
-Instance.new("UICorner",tpBtn)
-
-tpBtn.MouseButton1Click:Connect(function()
-    local c=player.Character
-    if not c then return end
-
-    local r=c:FindFirstChild("HumanoidRootPart")
-    if r then
-        r.CFrame = r.CFrame + Vector3.new(0,0,-60)
-    end
-end)
-
---------------------------------------------------
--- MENU ANİMASYON
+-- MENU
 --------------------------------------------------
 btn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
