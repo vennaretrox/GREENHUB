@@ -92,18 +92,58 @@ cont.BackgroundTransparency = 1
 Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SPEED LOOP
-task.spawn(function()
-    while true do
-        task.wait(0.2)
-        if speedOn then
-            local char = player.Character
-            if char then
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then
-                    hum.WalkSpeed = 40
-                end
-            end
+-- LEGIT SPEED (ANTI-CHEAT SAFE)
+--------------------------------------------------
+
+local legitOn = false
+local NORMAL_SPEED = 16
+local ADD_SPEED = 6 -- max +6 (çok safe)
+
+local speedBtn = Instance.new("TextButton", container)
+speedBtn.Size = UDim2.new(1,0,0,40)
+speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
+speedBtn.Text = "Legit Speed [OFF]"
+speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
+speedBtn.Font = Enum.Font.Gotham
+speedBtn.TextSize = 20
+Instance.new("UICorner", speedBtn)
+
+speedBtn.MouseButton1Click:Connect(function()
+    legitOn = not legitOn
+    if legitOn then
+        speedBtn.Text = "Legit Speed [ON]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
+    else
+        speedBtn.Text = "Legit Speed [OFF]"
+        speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
+
+        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.WalkSpeed = NORMAL_SPEED end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if not legitOn then return end
+
+    local char = player.Character
+    if not char then return end
+
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    -- Yumuşak geçiş (anti-detect)
+    local target = NORMAL_SPEED + ADD_SPEED
+
+    if hum.MoveDirection.Magnitude > 0.1 then
+        hum.WalkSpeed = hum.WalkSpeed + 0.5
+
+        if hum.WalkSpeed > target then
+            hum.WalkSpeed = target
+        end
+    else
+        -- durunca normale dön
+        if hum.WalkSpeed > NORMAL_SPEED then
+            hum.WalkSpeed = hum.WalkSpeed - 1
         end
     end
 end)
