@@ -1,4 +1,4 @@
--- GREENHUB ULTRA FIXED (NO RESET + SMOOTH SPEED)
+-- GREENHUB GOD MODE (ULTRA OP FINAL)
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -13,132 +13,218 @@ local function getGui()
 end
 
 local gui = Instance.new("ScreenGui")
-gui.Name = "GreenHub"
 gui.Parent = getGui()
 
 --------------------------------------------------
--- LOGO
+-- LOGO + DRAG
 --------------------------------------------------
-local openBtn = Instance.new("TextButton", gui)
-openBtn.Size = UDim2.fromOffset(120,40)
-openBtn.Position = UDim2.new(0,20,0,20)
-openBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-openBtn.Text = "GH"
-openBtn.TextColor3 = Color3.fromRGB(0,255,0)
-openBtn.Font = Enum.Font.GothamBold
-openBtn.TextScaled = true
-openBtn.BorderSizePixel = 0
+local btn = Instance.new("TextButton", gui)
+btn.Size = UDim2.fromOffset(120,40)
+btn.Position = UDim2.new(0,20,0,20)
+btn.Text = "GH"
+btn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+btn.TextColor3 = Color3.fromRGB(0,255,0)
+btn.Font = Enum.Font.GothamBold
+btn.TextScaled = true
 
-local stroke = Instance.new("UIStroke", openBtn)
-stroke.Color = Color3.fromRGB(0,255,0)
-stroke.Thickness = 1.5
+Instance.new("UIStroke", btn).Color = Color3.fromRGB(0,255,0)
 
--- animasyon (koyu → normal yeşil)
-RunService.RenderStepped:Connect(function()
-    local t = tick() % 2
-    if t < 1 then
-        openBtn.TextColor3 = Color3.fromRGB(0,180,0)
-    else
-        openBtn.TextColor3 = Color3.fromRGB(0,255,0)
+local dragging,dragStart,startPos
+
+btn.InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging=true
+        dragStart=i.Position
+        startPos=btn.Position
     end
 end)
 
-openBtn.MouseEnter:Connect(function() openBtn.Text = "GREENHUB" end)
-openBtn.MouseLeave:Connect(function() openBtn.Text = "GH" end)
+UIS.InputChanged:Connect(function(i)
+    if dragging and i.UserInputType==Enum.UserInputType.MouseMovement then
+        local d=i.Position-dragStart
+        btn.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y)
+    end
+end)
+
+UIS.InputEnded:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseButton1 then
+        dragging=false
+    end
+end)
 
 --------------------------------------------------
--- MAIN HUB
+-- MAIN
 --------------------------------------------------
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromOffset(400,250)
-main.Position = UDim2.new(0.5,-200,0.5,-125)
+main.Size = UDim2.fromOffset(400,380)
+main.Position = UDim2.new(0.5,-200,0.5,-190)
 main.BackgroundColor3 = Color3.fromRGB(15,25,15)
-main.Visible = false
+main.Visible=false
 Instance.new("UICorner", main)
 
-local border = Instance.new("UIStroke", main)
-border.Color = Color3.fromRGB(0,255,0)
-border.Thickness = 2
+Instance.new("UIStroke", main).Color = Color3.fromRGB(0,255,0)
 
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1,0,0,40)
-title.Text = "GREENHUB"
-title.BackgroundTransparency = 1
-title.TextColor3 = Color3.fromRGB(0,255,100)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 24
+title.Text="GREENHUB"
+title.Font=Enum.Font.GothamBold
+title.TextSize=26
+title.TextColor3=Color3.fromRGB(0,255,100)
+title.BackgroundTransparency=1
+
+local cont = Instance.new("Frame", main)
+cont.Position=UDim2.new(0,10,0,50)
+cont.Size=UDim2.new(1,-20,1,-60)
+cont.BackgroundTransparency=1
+Instance.new("UIListLayout", cont).Padding=UDim.new(0,10)
 
 --------------------------------------------------
--- CONTAINER
+-- SMART SPEED
 --------------------------------------------------
-local container = Instance.new("Frame", main)
-container.Position = UDim2.new(0,10,0,50)
-container.Size = UDim2.new(1,-20,1,-60)
-container.BackgroundTransparency = 1
-Instance.new("UIListLayout", container).Padding = UDim.new(0,10)
+local speed=false
+local baseSpeed=16
+local maxBoost=9
+local cur=16
 
---------------------------------------------------
--- SPEED (ULTRA STABLE)
---------------------------------------------------
-local speedOn = false
-local NORMAL_SPEED = 16
-local BOOST = 8 -- 🔥 hız (6-10 ideal)
-local TP_POWER = 0.6 -- 🔥 küçük tp (çok önemli)
+local sbtn=Instance.new("TextButton",cont)
+sbtn.Size=UDim2.new(1,0,0,40)
+sbtn.Text="Speed [OFF]"
+Instance.new("UICorner",sbtn)
 
-local speedBtn = Instance.new("TextButton", container)
-speedBtn.Size = UDim2.new(1,0,0,40)
-speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-speedBtn.Text = "Speed [OFF]"
-speedBtn.TextColor3 = Color3.fromRGB(0,0,0)
-speedBtn.Font = Enum.Font.GothamBold
-speedBtn.TextSize = 20
-Instance.new("UICorner", speedBtn)
-
-speedBtn.MouseButton1Click:Connect(function()
-    speedOn = not speedOn
-    if speedOn then
-        speedBtn.Text = "Speed [ON]"
-        speedBtn.BackgroundColor3 = Color3.fromRGB(0,100,0)
-    else
-        speedBtn.Text = "Speed [OFF]"
-        speedBtn.BackgroundColor3 = Color3.fromRGB(144,238,144)
-
-        local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-        if hum then hum.WalkSpeed = NORMAL_SPEED end
-    end
+sbtn.MouseButton1Click:Connect(function()
+    speed=not speed
+    sbtn.Text=speed and "Speed [ON]" or "Speed [OFF]"
 end)
-
--- SMOOTH SYSTEM (ANTI RESET)
-local currentSpeed = NORMAL_SPEED
 
 RunService.RenderStepped:Connect(function()
-    if not speedOn then return end
+    if not speed then return end
+    local c=player.Character
+    if not c then return end
+    local h=c:FindFirstChildOfClass("Humanoid")
+    if not h then return end
 
-    local char = player.Character
-    if not char then return end
-
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    local root = char:FindFirstChild("HumanoidRootPart")
-    if not hum or not root or hum.Health <= 0 then return end
-
-    if hum.MoveDirection.Magnitude > 0 then
-        -- yumuşak hız artışı
-        currentSpeed = math.min(currentSpeed + 0.4, NORMAL_SPEED + BOOST)
-        hum.WalkSpeed = currentSpeed
-
-        -- MICRO TP (çok küçük → detect edilmez)
-        root.CFrame = root.CFrame + (hum.MoveDirection * TP_POWER)
-
+    if h.MoveDirection.Magnitude>0 then
+        cur=math.min(cur+0.5,baseSpeed+maxBoost)
     else
-        -- yumuşak düşüş
-        currentSpeed = math.max(currentSpeed - 0.6, NORMAL_SPEED)
-        hum.WalkSpeed = currentSpeed
+        cur=math.max(cur-1,baseSpeed)
+    end
+
+    h.WalkSpeed=cur
+end)
+
+--------------------------------------------------
+-- DASH (COOLDOWN)
+--------------------------------------------------
+local lastDash=0
+UIS.InputBegan:Connect(function(i,gp)
+    if gp then return end
+    if i.KeyCode==Enum.KeyCode.Q then
+        if tick()-lastDash<1 then return end
+        lastDash=tick()
+
+        local c=player.Character
+        if not c then return end
+        local r=c:FindFirstChild("HumanoidRootPart")
+        local h=c:FindFirstChildOfClass("Humanoid")
+
+        if r and h then
+            r.CFrame=r.CFrame+(h.MoveDirection*20)
+        end
     end
 end)
 
 --------------------------------------------------
--- OPEN / CLOSE
+-- AUTO BASE TP (GERÇEK)
 --------------------------------------------------
-openBtn.MouseButton1Click:Connect(function()
-    main.Visible = not main.Visible
+local spawnPos
+
+player.CharacterAdded:Connect(function(char)
+    task.wait(1)
+    local root=char:WaitForChild("HumanoidRootPart")
+    spawnPos=root.CFrame
+end)
+
+RunService.Heartbeat:Connect(function()
+    local c=player.Character
+    if not c or not spawnPos then return end
+
+    local tool=c:FindFirstChildOfClass("Tool")
+    if tool and tool.Name:lower():find("brain") then
+        c.HumanoidRootPart.CFrame=spawnPos
+    end
+end)
+
+--------------------------------------------------
+-- SMART TP (İSİM / EN YAKIN)
+--------------------------------------------------
+local tpOn=false
+
+local tpbtn=Instance.new("TextButton",cont)
+tpbtn.Size=UDim2.new(1,0,0,40)
+tpbtn.Text="TP [OFF]"
+Instance.new("UICorner",tpbtn)
+
+local box=Instance.new("TextBox",cont)
+box.Size=UDim2.new(1,0,0,35)
+box.PlaceholderText="isim boş = en yakın"
+Instance.new("UICorner",box)
+
+tpbtn.MouseButton1Click:Connect(function()
+    tpOn=not tpOn
+    tpbtn.Text=tpOn and "TP [ON]" or "TP [OFF]"
+end)
+
+box.FocusLost:Connect(function(enter)
+    if not enter or not tpOn then return end
+
+    local my=player.Character
+    if not my then return end
+
+    local closest,dist=nil,math.huge
+
+    for _,plr in pairs(Players:GetPlayers()) do
+        if plr~=player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local d=(plr.Character.HumanoidRootPart.Position - my.HumanoidRootPart.Position).Magnitude
+
+            if box.Text=="" then
+                if d<dist then
+                    dist=d
+                    closest=plr
+                end
+            elseif plr.Name:lower():find(box.Text:lower()) then
+                closest=plr
+                break
+            end
+        end
+    end
+
+    if closest then
+        my.HumanoidRootPart.CFrame=
+            closest.Character.HumanoidRootPart.CFrame+Vector3.new(0,0,3)
+    end
+end)
+
+--------------------------------------------------
+-- AUTO STEAL (YAKINDA)
+--------------------------------------------------
+RunService.Heartbeat:Connect(function()
+    local c=player.Character
+    if not c then return end
+
+    for _,v in pairs(workspace:GetChildren()) do
+        if v:IsA("Tool") and v.Name:lower():find("brain") then
+            local handle=v:FindFirstChild("Handle")
+            if handle and (handle.Position - c.HumanoidRootPart.Position).Magnitude < 10 then
+                firetouchinterest(c.HumanoidRootPart, handle, 0)
+                firetouchinterest(c.HumanoidRootPart, handle, 1)
+            end
+        end
+    end
+end)
+
+--------------------------------------------------
+-- OPEN
+--------------------------------------------------
+btn.MouseButton1Click:Connect(function()
+    main.Visible=not main.Visible
 end)
