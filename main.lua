@@ -104,6 +104,41 @@ cont.BackgroundTransparency = 1
 Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 
 --------------------------------------------------
+-- PLAYER TP (İSME GÖRE)
+--------------------------------------------------
+local playerBox = Instance.new("TextBox", cont)
+playerBox.Size = UDim2.new(1,0,0,40)
+playerBox.PlaceholderText = "Oyuncu adı yaz (TP)"
+playerBox.Text = ""
+Instance.new("UICorner", playerBox)
+
+playerBox.FocusLost:Connect(function()
+    local text = playerBox.Text:lower()
+
+    for _,plr in pairs(game.Players:GetPlayers()) do
+        if plr.Name:lower():find(text) then
+
+            local myChar = player.Character
+            local targetChar = plr.Character
+
+            if myChar and targetChar then
+                local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+                local targetRoot = targetChar:FindFirstChild("HumanoidRootPart")
+
+                if myRoot and targetRoot then
+                    myRoot.CFrame = targetRoot.CFrame + Vector3.new(0,3,0)
+                    playerBox.Text = "TP OK"
+                    task.wait(1)
+                    playerBox.Text = ""
+                end
+            end
+
+            break
+        end
+    end
+end)
+
+--------------------------------------------------
 -- AUTO TP TOGGLE (MENÜ)
 --------------------------------------------------
 local tpToggleBtn = Instance.new("TextButton", cont)
