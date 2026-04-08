@@ -96,11 +96,11 @@ Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 --------------------------------------------------
 local speed=false
 local NORMAL=16
-local BOOST=1
-local TP=0.1
+local BOOST=3
+local tp = 0.1  
 
 local sbtn=Instance.new("TextButton",cont)
-sbtn.Size=UDim2.new(1,0,0,40)
+sbtn.Size=UDim2.new(1,0,0,41)
 sbtn.Text="Speed [OFF]"
 Instance.new("UICorner",sbtn)
 
@@ -144,7 +144,7 @@ UIS.InputBegan:Connect(function(i,gp)
         local h=c:FindFirstChildOfClass("Humanoid")
 
         if r and h then
-            r.CFrame = r.CFrame + (h.MoveDirection * 17)
+            r.CFrame = r.CFrame + (h.MoveDirection * 20)
         end
     end
 end)
