@@ -1,9 +1,10 @@
--- GREENHUB GOD MODE (ULTRA OP FINAL)
+-- GREENHUB GOD STABLE FINAL (NO BUG)
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 
@@ -16,7 +17,7 @@ local gui = Instance.new("ScreenGui")
 gui.Parent = getGui()
 
 --------------------------------------------------
--- LOGO + DRAG
+-- LOGO (ANİMASYON + DRAG)
 --------------------------------------------------
 local btn = Instance.new("TextButton", gui)
 btn.Size = UDim2.fromOffset(120,40)
@@ -29,10 +30,21 @@ btn.TextScaled = true
 
 Instance.new("UIStroke", btn).Color = Color3.fromRGB(0,255,0)
 
+-- glow animasyon
+task.spawn(function()
+    while true do
+        TweenService:Create(btn,TweenInfo.new(1),{TextColor3=Color3.fromRGB(0,180,0)}):Play()
+        task.wait(1)
+        TweenService:Create(btn,TweenInfo.new(1),{TextColor3=Color3.fromRGB(0,255,0)}):Play()
+        task.wait(1)
+    end
+end)
+
+-- drag
 local dragging,dragStart,startPos
 
 btn.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+    if i.UserInputType==Enum.UserInputType.MouseButton1 then
         dragging=true
         dragStart=i.Position
         startPos=btn.Position
@@ -53,38 +65,39 @@ UIS.InputEnded:Connect(function(i)
 end)
 
 --------------------------------------------------
--- MAIN
+-- MAIN (ANİMASYON)
 --------------------------------------------------
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromOffset(400,380)
-main.Position = UDim2.new(0.5,-200,0.5,-190)
+main.Size = UDim2.fromOffset(400,320)
+main.Position = UDim2.new(0.5,-200,0.5,-200)
 main.BackgroundColor3 = Color3.fromRGB(15,25,15)
-main.Visible=false
-Instance.new("UICorner", main)
+main.Visible = false
+main.BackgroundTransparency = 1
 
+Instance.new("UICorner", main)
 Instance.new("UIStroke", main).Color = Color3.fromRGB(0,255,0)
 
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1,0,0,40)
-title.Text="GREENHUB"
-title.Font=Enum.Font.GothamBold
-title.TextSize=26
-title.TextColor3=Color3.fromRGB(0,255,100)
-title.BackgroundTransparency=1
+title.Text = "GREENHUB"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 26
+title.TextColor3 = Color3.fromRGB(0,255,100)
+title.BackgroundTransparency = 1
 
 local cont = Instance.new("Frame", main)
-cont.Position=UDim2.new(0,10,0,50)
-cont.Size=UDim2.new(1,-20,1,-60)
-cont.BackgroundTransparency=1
-Instance.new("UIListLayout", cont).Padding=UDim.new(0,10)
+cont.Position = UDim2.new(0,10,0,50)
+cont.Size = UDim2.new(1,-20,1,-60)
+cont.BackgroundTransparency = 1
+Instance.new("UIListLayout", cont).Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SMART SPEED
+-- SPEED V2 (EN STABİL)
 --------------------------------------------------
 local speed=false
-local baseSpeed=16
-local maxBoost=9
-local cur=16
+local NORMAL=16
+local BOOST=7
+local TP=0.5
 
 local sbtn=Instance.new("TextButton",cont)
 sbtn.Size=UDim2.new(1,0,0,40)
@@ -98,133 +111,97 @@ end)
 
 RunService.RenderStepped:Connect(function()
     if not speed then return end
+
     local c=player.Character
     if not c then return end
+
     local h=c:FindFirstChildOfClass("Humanoid")
-    if not h then return end
+    local r=c:FindFirstChild("HumanoidRootPart")
+    if not h or not r then return end
 
     if h.MoveDirection.Magnitude>0 then
-        cur=math.min(cur+0.5,baseSpeed+maxBoost)
+        h.WalkSpeed = NORMAL + BOOST
+        r.CFrame = r.CFrame + (h.MoveDirection * TP)
     else
-        cur=math.max(cur-1,baseSpeed)
+        h.WalkSpeed = NORMAL
     end
-
-    h.WalkSpeed=cur
 end)
 
 --------------------------------------------------
--- DASH (COOLDOWN)
+-- DASH (E TUŞU)
 --------------------------------------------------
 local lastDash=0
 UIS.InputBegan:Connect(function(i,gp)
     if gp then return end
-    if i.KeyCode==Enum.KeyCode.Q then
+    if i.KeyCode==Enum.KeyCode.E then
         if tick()-lastDash<1 then return end
         lastDash=tick()
 
         local c=player.Character
         if not c then return end
+
         local r=c:FindFirstChild("HumanoidRootPart")
         local h=c:FindFirstChildOfClass("Humanoid")
 
         if r and h then
-            r.CFrame=r.CFrame+(h.MoveDirection*20)
+            r.CFrame = r.CFrame + (h.MoveDirection * 18)
         end
     end
 end)
 
 --------------------------------------------------
--- AUTO BASE TP (GERÇEK)
+-- BASE TP (KESİN FIX)
 --------------------------------------------------
-local spawnPos
+local basePos=nil
 
 player.CharacterAdded:Connect(function(char)
-    task.wait(1)
     local root=char:WaitForChild("HumanoidRootPart")
-    spawnPos=root.CFrame
+    task.wait(1)
+    basePos=root.CFrame
 end)
 
 RunService.Heartbeat:Connect(function()
     local c=player.Character
-    if not c or not spawnPos then return end
+    if not c or not basePos then return end
 
     local tool=c:FindFirstChildOfClass("Tool")
     if tool and tool.Name:lower():find("brain") then
-        c.HumanoidRootPart.CFrame=spawnPos
+        c.HumanoidRootPart.CFrame = basePos
+        task.wait(0.5)
     end
 end)
 
 --------------------------------------------------
--- SMART TP (İSİM / EN YAKIN)
+-- SAFE TP (BUTON)
 --------------------------------------------------
-local tpOn=false
+local tpBtn=Instance.new("TextButton",cont)
+tpBtn.Size=UDim2.new(1,0,0,40)
+tpBtn.Text="Safe TP"
+Instance.new("UICorner",tpBtn)
 
-local tpbtn=Instance.new("TextButton",cont)
-tpbtn.Size=UDim2.new(1,0,0,40)
-tpbtn.Text="TP [OFF]"
-Instance.new("UICorner",tpbtn)
-
-local box=Instance.new("TextBox",cont)
-box.Size=UDim2.new(1,0,0,35)
-box.PlaceholderText="isim boş = en yakın"
-Instance.new("UICorner",box)
-
-tpbtn.MouseButton1Click:Connect(function()
-    tpOn=not tpOn
-    tpbtn.Text=tpOn and "TP [ON]" or "TP [OFF]"
-end)
-
-box.FocusLost:Connect(function(enter)
-    if not enter or not tpOn then return end
-
-    local my=player.Character
-    if not my then return end
-
-    local closest,dist=nil,math.huge
-
-    for _,plr in pairs(Players:GetPlayers()) do
-        if plr~=player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            local d=(plr.Character.HumanoidRootPart.Position - my.HumanoidRootPart.Position).Magnitude
-
-            if box.Text=="" then
-                if d<dist then
-                    dist=d
-                    closest=plr
-                end
-            elseif plr.Name:lower():find(box.Text:lower()) then
-                closest=plr
-                break
-            end
-        end
-    end
-
-    if closest then
-        my.HumanoidRootPart.CFrame=
-            closest.Character.HumanoidRootPart.CFrame+Vector3.new(0,0,3)
-    end
-end)
-
---------------------------------------------------
--- AUTO STEAL (YAKINDA)
---------------------------------------------------
-RunService.Heartbeat:Connect(function()
+tpBtn.MouseButton1Click:Connect(function()
     local c=player.Character
     if not c then return end
 
-    for _,v in pairs(workspace:GetChildren()) do
-        if v:IsA("Tool") and v.Name:lower():find("brain") then
-            local handle=v:FindFirstChild("Handle")
-            if handle and (handle.Position - c.HumanoidRootPart.Position).Magnitude < 10 then
-                firetouchinterest(c.HumanoidRootPart, handle, 0)
-                firetouchinterest(c.HumanoidRootPart, handle, 1)
-            end
-        end
+    local r=c:FindFirstChild("HumanoidRootPart")
+    if r then
+        r.CFrame = r.CFrame + Vector3.new(0,0,-60)
     end
 end)
 
 --------------------------------------------------
--- OPEN
+-- MENU ANİMASYON
 --------------------------------------------------
 btn.MouseButton1Click:Connect(function()
-    main.Visible=not main.Visible
+    main.Visible = not main.Visible
+
+    if main.Visible then
+        main.Position = UDim2.new(0.5,-200,0.5,-250)
+        main.BackgroundTransparency = 1
+
+        TweenService:Create(main,TweenInfo.new(0.3),{
+            Position = UDim2.new(0.5,-200,0.5,-160),
+            BackgroundTransparency = 0
+        }):Play()
+    end
 end)
