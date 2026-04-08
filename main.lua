@@ -1,4 +1,4 @@
--- GREENHUB ULTRA CLEAN (SINGLE SPEED + MICRO TP)
+-- GREENHUB ULTRA FIXED (NO RESET + SMOOTH SPEED)
 
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
@@ -7,7 +7,6 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- GUI
 local function getGui()
     if gethui then return gethui() end
     return CoreGui or player:WaitForChild("PlayerGui")
@@ -34,50 +33,18 @@ local stroke = Instance.new("UIStroke", openBtn)
 stroke.Color = Color3.fromRGB(0,255,0)
 stroke.Thickness = 1.5
 
--- Animasyon (koyu → normal yeşil)
-RunService.Heartbeat:Connect(function()
-    if tick() % 2 < 1 then
+-- animasyon (koyu → normal yeşil)
+RunService.RenderStepped:Connect(function()
+    local t = tick() % 2
+    if t < 1 then
         openBtn.TextColor3 = Color3.fromRGB(0,180,0)
     else
         openBtn.TextColor3 = Color3.fromRGB(0,255,0)
     end
 end)
 
--- Hover
 openBtn.MouseEnter:Connect(function() openBtn.Text = "GREENHUB" end)
 openBtn.MouseLeave:Connect(function() openBtn.Text = "GH" end)
-
---------------------------------------------------
--- DRAG
---------------------------------------------------
-local dragging = false
-local dragStart, startPos
-
-openBtn.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = openBtn.Position
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        openBtn.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
 
 --------------------------------------------------
 -- MAIN HUB
@@ -93,13 +60,12 @@ local border = Instance.new("UIStroke", main)
 border.Color = Color3.fromRGB(0,255,0)
 border.Thickness = 2
 
--- TITLE (KALIN YAPILDI)
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1,0,0,40)
 title.Text = "GREENHUB"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(0,255,100)
-title.Font = Enum.Font.GothamBold -- 🔥 BURASI KALIN
+title.Font = Enum.Font.GothamBold
 title.TextSize = 24
 
 --------------------------------------------------
@@ -112,11 +78,12 @@ container.BackgroundTransparency = 1
 Instance.new("UIListLayout", container).Padding = UDim.new(0,10)
 
 --------------------------------------------------
--- SINGLE SPEED (LEGIT + MICRO TP)
+-- SPEED (ULTRA STABLE)
 --------------------------------------------------
 local speedOn = false
 local NORMAL_SPEED = 16
-local ADD_SPEED = 6 -- hız (6-10 arası ideal)
+local BOOST = 8 -- 🔥 hız (6-10 ideal)
+local TP_POWER = 0.6 -- 🔥 küçük tp (çok önemli)
 
 local speedBtn = Instance.new("TextButton", container)
 speedBtn.Size = UDim2.new(1,0,0,40)
@@ -141,7 +108,10 @@ speedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-RunService.Heartbeat:Connect(function()
+-- SMOOTH SYSTEM (ANTI RESET)
+local currentSpeed = NORMAL_SPEED
+
+RunService.RenderStepped:Connect(function()
     if not speedOn then return end
 
     local char = player.Character
@@ -149,19 +119,20 @@ RunService.Heartbeat:Connect(function()
 
     local hum = char:FindFirstChildOfClass("Humanoid")
     local root = char:FindFirstChild("HumanoidRootPart")
-    if not hum or not root then return end
+    if not hum or not root or hum.Health <= 0 then return end
 
-    local target = NORMAL_SPEED + ADD_SPEED
+    if hum.MoveDirection.Magnitude > 0 then
+        -- yumuşak hız artışı
+        currentSpeed = math.min(currentSpeed + 0.4, NORMAL_SPEED + BOOST)
+        hum.WalkSpeed = currentSpeed
 
-    -- legit speed (yumuşak artış)
-    if hum.MoveDirection.Magnitude > 0.1 then
-        hum.WalkSpeed = math.min(hum.WalkSpeed + 0.6, target)
-
-        -- micro teleport (çok küçük, anti lag)
+        -- MICRO TP (çok küçük → detect edilmez)
         root.CFrame = root.CFrame + (hum.MoveDirection * TP_POWER)
+
     else
-        -- durunca normale dön
-        hum.WalkSpeed = math.max(hum.WalkSpeed - 1, NORMAL_SPEED)
+        -- yumuşak düşüş
+        currentSpeed = math.max(currentSpeed - 0.6, NORMAL_SPEED)
+        hum.WalkSpeed = currentSpeed
     end
 end)
 
@@ -171,4 +142,3 @@ end)
 openBtn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
 end)
-
