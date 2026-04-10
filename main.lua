@@ -129,7 +129,7 @@ end)
 --------------------------------------------------
 local legitOn = false
 local NORMAL = 16
-local ADD = 7
+local ADD = 8
 
 local speedBtn = Instance.new("TextButton", cont)
 speedBtn.Size = UDim2.new(1,0,0,40)
@@ -177,7 +177,7 @@ UIS.InputBegan:Connect(function(i,gp)
             end
         end
 
-        task.wait(1.2)
+        task.wait(1.8)
         canDash = true
     end
 end)
